@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#111111" />
+  <link rel="icon" href="assets/app-icon.png" />
+  <link rel="apple-touch-icon" href="assets/app-icon.png" />
+  <title>Happy Birthday Mine 🤍</title>
+  <style>
+    * { box-sizing: border-box; scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Georgia, serif;
+      color: white;
+      background:
+        radial-gradient(circle at top left, rgba(250,204,21,.25), transparent 32%),
+        radial-gradient(circle at bottom right, rgba(245,158,11,.22), transparent 32%),
+        linear-gradient(135deg, #0c0a09, #171717, #2b1804);
+      overflow-x: hidden;
+    }
+    .hearts, .confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 2; }
+    .heart { position: absolute; bottom: -40px; color: rgba(254,243,199,.55); animation: floatUp linear infinite; }
+    @keyframes floatUp { to { transform: translateY(-110vh) rotate(360deg); opacity: 0; } }
+    .confetti i { position: absolute; width: 7px; height: 12px; top: -20px; animation: fall linear infinite; opacity: .8; }
+    @keyframes fall { to { transform: translateY(110vh) rotate(540deg); opacity: 0; } }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 6vw;
+      background: rgba(0,0,0,.45);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(250,204,21,.18);
+    }
+    .brand { font-weight: 800; color: #fef3c7; }
+    .music {
+      width: auto;
+      border: 1px solid rgba(250,204,21,.35);
+      background: rgba(255,255,255,.12);
+      color: #fef3c7;
+      border-radius: 999px;
+      padding: 10px 16px;
+      margin: 0;
+    }
+    section {
+      min-height: 100vh;
+      padding: 96px 6vw 60px;
+      position: relative;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container { width: 100%; max-width: 1050px; margin: auto; }
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 36px;
+      align-items: center;
+    }
+    .hero-video, .memory-video {
+      width: 100%;
+      border-radius: 34px;
+      border: 1px solid rgba(250,204,21,.32);
+      box-shadow: 0 25px 90px rgba(0,0,0,.45);
+      background: #000;
+      object-fit: cover;
+    }
+    .hero-video { height: 620px; }
+    .memory-video { height: 560px; }
+    h1 {
+      font-size: clamp(48px, 8vw, 96px);
+      line-height: .95;
+      margin: 0;
+      font-family: Georgia, serif;
+    }
+    h2 {
+      font-size: clamp(34px, 5vw, 58px);
+      color: #fef3c7;
+      margin: 0 0 22px;
+      font-family: Georgia, serif;
+    }
+    .mine { font-size: clamp(32px, 5vw, 60px); color: #fde68a; font-style: italic; margin-top: 18px; }
+    p { font-size: clamp(17px, 2vw, 21px); line-height: 1.8; color: #f5f5f4; }
+    button, .button {
+      display: inline-block;
+      border: none;
+      background: #fde047;
+      color: #111;
+      padding: 16px 26px;
+      border-radius: 18px;
+      font-weight: 800;
+      font-size: 16px;
+      cursor: pointer;
+      text-decoration: none;
+      margin-top: 20px;
+      box-shadow: 0 14px 30px rgba(250,204,21,.18);
+    }
+    .card {
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(250,204,21,.22);
+      border-radius: 34px;
+      padding: clamp(24px, 4vw, 48px);
+      box-shadow: 0 25px 80px rgba(0,0,0,.28);
+      backdrop-filter: blur(12px);
+    }
+    .slideshow-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 620px;
+      margin: 0 auto;
+      border-radius: 28px;
+      overflow: hidden;
+      border: 1px solid rgba(250,204,21,.32);
+      box-shadow: 0 25px 90px rgba(0,0,0,.45);
+      background: #000;
+    }
+    .slide-img {
+      width: 100%;
+      height: 480px;
+      object-fit: cover;
+      display: block;
+      transition: opacity .25s ease;
+    }
+    .slide-dots {
+      position: absolute;
+      bottom: 14px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+    }
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.4);
+      cursor: pointer;
+    }
+    .dot.active { background: #fde047; }
+    @media (max-width: 800px) {
+      .slide-img { height: 380px; }
+    }
+    .memory-grid {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 36px;
+      align-items: center;
+    }
+    .caption {
+      color: #fef3c7;
+      font-style: italic;
+      font-size: 26px;
+      margin-top: 16px;
+    }
+    .hint { color: #d6d3d1; font-size: 15px; margin-top: 12px; }
+    #loveBtn { display: none; }
+    #nextVideoBtn { display: none; }
+    .reasons {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 28px;
+    }
+    .reason {
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(250,204,21,.1);
+      border: 1px solid rgba(250,204,21,.2);
+      font-size: 18px;
+    }
+    .number { color: #fde047; font-weight: 800; margin-right: 8px; }
+    .final {
+      text-align: center;
+      max-width: 780px;
+    }
+    .bigheart { font-size: 90px; animation: beat 1.6s infinite; }
+    @keyframes beat { 50% { transform: scale(1.16); } }
+
+    @media (max-width: 800px) {
+      nav { padding: 12px 18px; }
+      section { padding: 86px 18px 46px; }
+      .hero, .memory-grid { grid-template-columns: 1fr; }
+      .hero-video, .memory-video { height: 460px; }
+      .reasons { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="brand">Mine’s Birthday 🤍</div>
+    <button class="music" onclick="toggleMusic()">♫ Music</button>
+  </nav>
+
+  <audio id="music" src="assets/birthday-melody.wav" loop></audio>
+  <div class="hearts" id="hearts"></div>
+  <div class="confetti" id="confetti"></div>
+
+  <section id="home">
+    <div class="container hero">
+      <div>
+        <h1>Happy Birthday</h1>
+        <div class="mine">Mine 🤍</div>
+        <p>A little birthday surprise made specially for the one I want to do life with.</p>
+        <a class="button" href="#message">Open your birthday gift →</a>
+      </div>
+      <video class="hero-video" src="videos/2025_10_31_17_17_27_IMG_9973.MP4" autoplay muted loop playsinline></video>
+    </div>
+  </section>
+
+  <section id="message">
+    <div class="container card">
+      <h2>My Birthday Message</h2>
+      <p>
+        Happy birthday to the one I want to do life with. You make my life brighter, my heart happier and my world more beautiful every single day.
+        <br><br>
+        Today I not only celebrate your birthday, but the amazing soul you are — kind, loving, strong, and unforgettable.
+        <br><br>
+        I pray this new year brings you endless happiness, peace, success, and all the love your heart can hold.
+      </p>
+      <a class="button" href="#slideshow">Watch our memories →</a>
+    </div>
+  </section>
+
+  <section id="slideshow">
+    <div class="container card">
+      <h2>Our Photos</h2>
+      <div class="slideshow-wrap">
+        <img id="slideImg" class="slide-img" src="" alt="Our memory" />
+        <div class="slide-dots" id="slideDots"></div>
+      </div>
+      <div id="slideCaption" class="caption">Every picture tells our story</div>
+      <a class="button" href="#memories">Watch our videos →</a>
+    </div>
+  </section>
+
+  <section id="memories">
+    <div class="container memory-grid">
+      <div>
+        <video id="memoryVideo" class="memory-video" src="videos/2025_10_21_15_24_17_IMG_9811.MP4" controls muted playsinline onended="videoEnded()"></video>
+      </div>
+      <div class="card">
+        <h2>Our Memories</h2>
+        <div id="caption" class="caption">Every smile with you feels like home</div>
+        <div id="hint" class="hint">Play each video once. The next button appears after each video ends.</div>
+        <button id="nextVideoBtn" onclick="nextVideo()">Next Video →</button>
+        <a id="loveBtn" class="button" href="#reasons">Why I love you →</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="reasons">
+    <div class="container card">
+      <h2>Reasons I Love You</h2>
+      <div class="reasons">
+        <div class="reason"><span class="number">1.</span>You are kind.</div>
+        <div class="reason"><span class="number">2.</span>You are caring.</div>
+        <div class="reason"><span class="number">3.</span>You are my safe place.</div>
+        <div class="reason"><span class="number">4.</span>You make my heart happier.</div>
+        <div class="reason"><span class="number">5.</span>You love me unconditionally.</div>
+        <div class="reason"><span class="number">6.</span>You make my life easier.</div>
+        <div class="reason"><span class="number">7.</span>You light up my world.</div>
+      </div>
+      <a class="button" href="#final">One last surprise →</a>
+    </div>
+  </section>
+
+  <section id="final">
+    <div class="container card final">
+      <div class="bigheart">🤍</div>
+      <h2>My Forever Place</h2>
+      <p>
+        Thank you for being my safe place, my happiness and my forever place.
+        <br><br>
+        No matter where life takes us, my heart will choose you.
+        <br><br>
+        Happy birthday soulmate. I love you endlessly.
+      </p>
+      <a class="button" href="#home">Back to start</a>
+    </div>
+  </section>
+
+  <script>
+    const captions = ['Every smile with you feels like home', 'You make my world brighter', 'Forever my happiness'];
+    const videos = ['2025_10_21_15_24_17_IMG_9811.MP4', '2025_10_28_20_58_29_IMG_9899.MP4', '2025_10_31_17_17_27_IMG_9973.MP4'].map(name => "videos/" + name);
+    let currentVideo = 0;
+
+    const slidePhotos = ['2025_02_13_22_04_06_IMG_5090.PNG', '2025_05_16_22_38_25_IMG_6459.PNG', '2025_05_19_17_39_21_IMG_6501.PNG', '2025_08_02_19_54_00_IMG_8239.JPG', '2025_10_28_21_13_13_IMG_9947.jpg', '2025_10_28_21_13_15_IMG_9922.jpg', '2025_10_28_21_13_17_IMG_9948.jpg'].map(name => "photos/" + name);
+    const slideCaptions = ['My favorite memories are with you', 'You are my forever place', 'My heart will always choose you', 'Beautiful moments together', 'You make life feel special', 'Every day with you is a blessing', 'My soulmate forever'];
+    let currentSlide = 0;
+    let slideTimer = null;
+
+    function renderDots() {
+      const dotsWrap = document.getElementById("slideDots");
+      dotsWrap.innerHTML = "";
+      slidePhotos.forEach((_, i) => {
+        const dot = document.createElement("span");
+        dot.className = "dot" + (i === currentSlide ? " active" : "");
+        dot.onclick = () => showSlide(i);
+        dotsWrap.appendChild(dot);
+      });
+    }
+
+    function showSlide(i) {
+      currentSlide = (i + slidePhotos.length) % slidePhotos.length;
+      const img = document.getElementById("slideImg");
+      img.style.opacity = 0;
+      setTimeout(() => {
+        img.src = slidePhotos[currentSlide];
+        document.getElementById("slideCaption").innerText = slideCaptions[currentSlide];
+        img.style.opacity = 1;
+      }, 250);
+      renderDots();
+    }
+
+    function startSlideshow() {
+      if (slideTimer) return;
+      showSlide(0);
+      slideTimer = setInterval(() => showSlide(currentSlide + 1), 3500);
+    }
+
+    function toggleMusic() {
+      const m = document.getElementById("music");
+      if (m.paused) { m.volume = 0.35; m.play(); } else { m.pause(); }
+    }
+
+    function videoEnded() {
+      if (currentVideo < videos.length - 1) {
+        document.getElementById("nextVideoBtn").style.display = "inline-block";
+        document.getElementById("loveBtn").style.display = "none";
+        document.getElementById("hint").innerText = "Tap Next Video to continue.";
+      } else {
+        document.getElementById("nextVideoBtn").style.display = "none";
+        document.getElementById("loveBtn").style.display = "inline-block";
+        document.getElementById("hint").innerText = "You have watched all the memories 🤍";
+      }
+    }
+
+    function nextVideo() {
+      if (currentVideo >= videos.length - 1) return;
+      currentVideo++;
+      const v = document.getElementById("memoryVideo");
+      document.getElementById("nextVideoBtn").style.display = "none";
+      document.getElementById("loveBtn").style.display = "none";
+      document.getElementById("caption").innerText = captions[currentVideo];
+      document.getElementById("hint").innerText = "Playing video " + (currentVideo + 1) + " of " + videos.length;
+      v.src = videos[currentVideo];
+      v.loop = false;
+      v.currentTime = 0;
+      v.play().catch(() => {});
+    }
+
+    const slideshowSection = document.getElementById("slideshow");
+    const slideshowObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => { if (entry.isIntersecting) startSlideshow(); });
+    }, { threshold: 0.4 });
+    slideshowObserver.observe(slideshowSection);
+
+    const hearts = document.getElementById("hearts");
+    for (let i = 0; i < 20; i++) {
+      const h = document.createElement("div");
+      h.className = "heart";
+      h.innerText = i % 2 ? "♡" : "🤍";
+      h.style.left = Math.random() * 100 + "%";
+      h.style.fontSize = (18 + Math.random() * 26) + "px";
+      h.style.animationDuration = (6 + Math.random() * 6) + "s";
+      h.style.animationDelay = Math.random() * 6 + "s";
+      hearts.appendChild(h);
+    }
+
+    const confetti = document.getElementById("confetti");
+    for (let i = 0; i < 45; i++) {
+      const c = document.createElement("i");
+      c.style.left = Math.random() * 100 + "%";
+      c.style.background = ["#fde047", "#fef3c7", "#ffffff", "#f59e0b"][i % 4];
+      c.style.animationDuration = (5 + Math.random() * 6) + "s";
+      c.style.animationDelay = Math.random() * 8 + "s";
+      confetti.appendChild(c);
+    }
+  </script>
+</body>
+</html>
